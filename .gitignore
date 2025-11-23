@@ -1,0 +1,18 @@
+# Ignorar carpetas de Java (Backend)
+backend/target/
+backend/.mvn/
+backend/mvnw
+backend/mvnw.cmd
+backend/.idea/
+*.class
+*.log
+backend/help.md
+
+# Ignorar carpetas de React (Frontend)
+portfolio-frontend/node_modules/
+portfolio-frontend/dist/
+portfolio-frontend/.vscode/
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
