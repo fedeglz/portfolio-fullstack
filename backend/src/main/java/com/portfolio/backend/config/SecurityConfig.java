@@ -1,5 +1,6 @@
 package com.portfolio.backend.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -22,20 +23,31 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    // 1. Traemos el Email y la Contraseña desde application.properties
+    // (Que a su vez los trae de tus Variables de Entorno)
+    @Value("${portfolio.admin.email}")
+    private String adminEmail;
+
+    @Value("${portfolio.admin.password}")
+    private String adminPassword;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // 1. ¡ACTIVAR CORS EN SEGURIDAD! (Esto es lo que faltaba)
-                .cors(Customizer.withDefaults())
+                .cors(Customizer.withDefaults()) // Activar CORS
+                .csrf(csrf -> csrf.disable())    // Desactivar CSRF
 
-                // 2. Desactivar CSRF
-                .csrf(csrf -> csrf.disable())
-
-                // 3. Reglas de quién entra y quién no
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.GET, "/api/projects/**").permitAll() // Ver es público
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // ¡IMPORTANTE! Dejar pasar preflight
-                        .anyRequest().authenticated() // Crear/Borrar requiere pass
+                        // Rutas Públicas (Todos pueden ver)
+                        .requestMatchers(HttpMethod.GET, "/api/projects/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/certificados/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/persona/**").permitAll()
+
+                        // Permitir el "vuelo de reconocimiento" del navegador (Preflight)
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // Todo lo demás (POST, DELETE, PUT) requiere Login
+                        .anyRequest().authenticated()
                 )
 
                 .httpBasic(Customizer.withDefaults());
@@ -43,11 +55,11 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // Configuración explícita de CORS para Spring Security
+    // Configuración de CORS (Para que React pueda hablar con Java)
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173")); // Tu React
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173")); // Tu Frontend
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);
@@ -57,11 +69,12 @@ public class SecurityConfig {
         return source;
     }
 
+    // 2. Creamos el usuario usando las Variables de Entorno
     @Bean
     public UserDetailsService userDetailsService() {
         UserDetails admin = User.builder()
-                .username("admin")
-                .password("{noop}admin123")
+                .username(adminEmail)               // Usa la variable
+                .password("{noop}" + adminPassword) // Usa la variable
                 .roles("ADMIN")
                 .build();
 

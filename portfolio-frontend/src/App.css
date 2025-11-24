@@ -1,122 +1,103 @@
-/* App.css */
-.app-container {
-  width: 100%;
-  max-width: 1200px; /* Que no se estire infinito en pantallas gigantes */
-  margin: 0 auto;    /* ESTO ES LA MAGIA: Centra el bloque horizontalmente */
-  padding: 20px;
-  text-align: center; /* Centra el texto de los títulos */
+/* Importamos fuente moderna */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+:root {
+  --primary: #0f172a;       /* Azul muy oscuro (Casi negro) */
+  --secondary: #3b82f6;     /* Azul brillante para acentos */
+  --bg-light: #f1f5f9;      /* Gris muy claro de fondo */
+  --text-dark: #1e293b;     /* Texto principal */
+  --text-light: #64748b;    /* Texto secundario */
+  --white: #ffffff;
+  --danger: #ef4444;
+  --success: #22c55e;
 }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
 body {
-  background-color: #f0f2f5;
-  color: #333;
-  margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--bg-light);
+  color: var(--text-dark);
+  line-height: 1.6;
 }
 
-h1 {
+/* --- HERO SECTION --- */
+.hero {
+  background: linear-gradient(135deg, var(--primary) 0%, #1e293b 100%);
+  color: var(--white);
+  padding: 100px 20px 80px;
   text-align: center;
-  color: #2c3e50;
+  position: relative;
+  /* Efecto de corte diagonal */
+  clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%); 
 }
 
-h2 {
-  text-align: center;
-  color: #7f8c8d;
-  margin-bottom: 40px;
-}
+.hero h1 { font-size: 3.5rem; font-weight: 700; margin-bottom: 10px; letter-spacing: -1px; }
+.hero h2 { font-size: 1.5rem; font-weight: 300; color: #94a3b8; margin-bottom: 25px; }
+.hero-tagline { font-size: 1.1rem; max-width: 600px; margin: 0 auto 40px; color: #cbd5e1; }
 
-/* Contenedor en cuadrícula */
-.grid-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 30px;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-/* Diseño de la Tarjeta */
-.card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  overflow: hidden;
-  transition: transform 0.2s;
-}
-
-.card:hover {
-  transform: translateY(-5px); /* Efecto de elevación al pasar el mouse */
-}
-
-.card-img {
-  width: 100%;
-  height: 180px;
-  object-fit: cover; /* Para que la imagen no se deforme */
-}
-
-.card-body {
-  padding: 20px;
-}
-
-.btn {
-  display: inline-block;
-  margin-top: 10px;
-  padding: 10px 20px;
-  background-color: #007bff;
+.btn-primary {
+  padding: 12px 30px;
+  background: var(--secondary);
   color: white;
   text-decoration: none;
-  border-radius: 5px;
-  font-weight: bold;
+  border-radius: 50px;
+  font-weight: 600;
+  transition: transform 0.2s;
+  margin: 0 10px;
 }
-
-.btn:hover {
-  background-color: #0056b3;
-}
-
-/* Estilo para el botón de borrar */
-.btn-danger {
-  background-color: #dc3545; /* Rojo */
+.btn-outline {
+  padding: 10px 28px;
+  border: 2px solid rgba(255,255,255,0.2);
   color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
+  text-decoration: none;
+  border-radius: 50px;
+  font-weight: 600;
+  margin: 0 10px;
 }
+.btn-primary:hover, .btn-outline:hover { transform: translateY(-3px); opacity: 0.9; }
 
-.btn-danger:hover {
-  background-color: #bb2d3b; /* Rojo más oscuro al pasar el mouse */
-}
+/* --- LOGIN MINI --- */
+.admin-trigger { position: absolute; top: 20px; right: 20px; }
+.login-mini input { padding: 8px; border-radius: 4px; border: none; font-size: 0.8rem; margin-right: 5px; background: rgba(255,255,255,0.1); color: white; }
+.login-mini button, .btn-logout { padding: 8px 12px; font-size: 0.8rem; cursor: pointer; background: var(--secondary); color: white; border: none; border-radius: 4px; }
 
-/* Estilos para el formulario nuevo */
-.form-container {
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  max-width: 500px;
-  margin: 0 auto 40px auto; /* Centrado y separado de las tarjetas */
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
+/* --- SECCIONES --- */
+.section { max-width: 1100px; margin: 0 auto; padding: 60px 20px; }
+.section h3 { text-align: center; font-size: 2.2rem; margin-bottom: 50px; color: var(--primary); position: relative; }
+.section h3::after { content: ''; display: block; width: 60px; height: 4px; background: var(--secondary); margin: 15px auto 0; border-radius: 2px; }
 
-.form-container input, 
-.form-container textarea {
-  width: 90%; /* Ancho cómodo */
-  padding: 10px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-family: inherit;
+/* --- EDUCACIÓN --- */
+.education-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; }
+.edu-card {
+  background: var(--white); padding: 30px; border-radius: 16px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-top: 5px solid var(--secondary);
 }
+.edu-card h4 { font-size: 1.1rem; margin-bottom: 5px; color: var(--primary); }
+.edu-card span { display: block; font-size: 0.85rem; color: var(--secondary); font-weight: 700; text-transform: uppercase; margin-bottom: 15px; }
+.edu-card p { font-size: 0.95rem; color: var(--text-light); }
 
-.btn-success {
-  background-color: #28a745; /* Verde éxito */
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  cursor: pointer;
-  width: 100%;
-  font-size: 1rem;
+/* --- PORTAFOLIO --- */
+.grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; }
+.card {
+  background: var(--white); border-radius: 20px; overflow: hidden;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.05); transition: all 0.3s ease;
 }
+.card:hover { transform: translateY(-5px); box-shadow: 0 20px 30px rgba(0,0,0,0.1); }
+.card-image-container { height: 200px; overflow: hidden; }
+.card-image-container img { width: 100%; height: 100%; object-fit: cover; }
+.card-body { padding: 25px; }
+.card-body h4 { font-size: 1.3rem; margin-bottom: 10px; color: var(--primary); }
+.card-actions { display: flex; gap: 10px; margin-top: 20px; }
+.btn-demo { flex: 1; text-align: center; padding: 10px; background: #6366f1; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; }
+.btn-danger { padding: 10px 15px; background: var(--danger); color: white; border: none; border-radius: 8px; cursor: pointer; }
 
-.btn-success:hover {
-  background-color: #218838;
-}
+/* --- ADMIN PANEL --- */
+.admin-panel { background: var(--white); padding: 30px; border-radius: 12px; box-shadow: 0 0 20px rgba(0,0,0,0.1); margin-bottom: 50px; border: 2px dashed var(--secondary); }
+.admin-form input, .admin-form textarea { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #e2e8f0; border-radius: 8px; }
+.btn-success { width: 100%; padding: 12px; background: var(--success); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; }
+
+/* --- FOOTER --- */
+.footer { background: var(--primary); color: var(--white); text-align: center; padding: 80px 20px; margin-top: 80px; }
+.contact-info { margin: 30px 0; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+.contact-info span { background: rgba(255,255,255,0.1); padding: 10px 25px; border-radius: 50px; }
