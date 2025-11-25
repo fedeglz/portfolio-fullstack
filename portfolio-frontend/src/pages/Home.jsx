@@ -29,13 +29,13 @@ function Home() {
     const token = sessionStorage.getItem('adminToken')
     if (token) { setIsLoggedIn(true); setAuthHeader(token); }
 
-    fetch('http://localhost:8080/api/persona').then(r => r.json()).then(data => {
+    fetch('https://portfolio-backend-h9y2.onrender.com/api/persona').then(r => r.json()).then(data => {
         setPersona(data)
         if(data) { setEditNombre(data.nombre); setEditTitulo(data.titulo); setEditSobreMi(data.sobreMi); setEditFoto(data.fotoUrl); }
     }).catch(console.error)
 
-    fetch('http://localhost:8080/api/projects').then(r => r.json()).then(setProjects).catch(console.error)
-    fetch('http://localhost:8080/api/certificados').then(r => r.json()).then(setCertificates).catch(console.error)
+    fetch('https://portfolio-backend-h9y2.onrender.com/api/projects').then(r => r.json()).then(setProjects).catch(console.error)
+    fetch('https://portfolio-backend-h9y2.onrender.com/api/certificados').then(r => r.json()).then(setCertificates).catch(console.error)
   }, [])
 
   const handleLogout = () => {
@@ -55,7 +55,7 @@ function Home() {
 
   const handleSaveProfile = (e) => {
     e.preventDefault()
-    fetch('http://localhost:8080/api/persona', {
+    fetch('https://portfolio-backend-h9y2.onrender.com/api/persona', {
         method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': authHeader },
         body: JSON.stringify({ nombre: editNombre, titulo: editTitulo, sobreMi: editSobreMi, fotoUrl: editFoto })
     }).then(r => r.json()).then(data => { setPersona(data); alert("Perfil actualizado"); })
@@ -145,7 +145,7 @@ function Home() {
         {isLoggedIn && (
             <div className="admin-panel">
                 <h4>+ Agregar Certificado</h4>
-                <form onSubmit={(e) => { e.preventDefault(); createItem('http://localhost:8080/api/certificados', {titulo: cTitulo, institucion: cInst, imagenUrl: cImg, descripcion: cDesc}, setCertificates, certificates, () => { setCTitulo(""); setCInst(""); setCImg(""); setCDesc(""); }) }} className="admin-form">
+                <form onSubmit={(e) => { e.preventDefault(); createItem('https://portfolio-backend-h9y2.onrender.com/api/certificados', {titulo: cTitulo, institucion: cInst, imagenUrl: cImg, descripcion: cDesc}, setCertificates, certificates, () => { setCTitulo(""); setCInst(""); setCImg(""); setCDesc(""); }) }} className="admin-form">
                     <input type="text" placeholder="Título" value={cTitulo} onChange={e => setCTitulo(e.target.value)} />
                     <input type="text" placeholder="Institución" value={cInst} onChange={e => setCInst(e.target.value)} />
                     <input type="file" accept="image/*" onChange={(e) => uploadImage(e, setCImg)} style={{marginBottom:'5px'}} />
@@ -162,7 +162,7 @@ function Home() {
                     <h4>{cert.titulo}</h4>
                     <span>{cert.institucion}</span>
                     <p>{cert.descripcion}</p>
-                    {isLoggedIn && <button onClick={(e)=>{e.stopPropagation(); deleteItem('http://localhost:8080/api/certificados', cert.id, setCertificates, certificates)}} className="btn-danger">Eliminar</button>}
+                    {isLoggedIn && <button onClick={(e)=>{e.stopPropagation(); deleteItem('https://portfolio-backend-h9y2.onrender.com/api/certificados', cert.id, setCertificates, certificates)}} className="btn-danger">Eliminar</button>}
                 </div>
             ))}
         </div>
@@ -173,7 +173,7 @@ function Home() {
         {isLoggedIn && (
             <div className="admin-panel">
                 <h4>+ Agregar Proyecto</h4>
-                <form onSubmit={(e) => { e.preventDefault(); createItem('http://localhost:8080/api/projects', {name: pTitulo, description: pDesc, imageUrl: pImg, repoUrl: pRepo, demoUrl: pDemo}, setProjects, projects, () => { setPTitulo(""); setPDesc(""); setPImg(""); setPRepo(""); setPDemo(""); }) }} className="admin-form">
+                <form onSubmit={(e) => { e.preventDefault(); createItem('https://portfolio-backend-h9y2.onrender.com/api/projects', {name: pTitulo, description: pDesc, imageUrl: pImg, repoUrl: pRepo, demoUrl: pDemo}, setProjects, projects, () => { setPTitulo(""); setPDesc(""); setPImg(""); setPRepo(""); setPDemo(""); }) }} className="admin-form">
                     <input type="text" placeholder="Título" value={pTitulo} onChange={e => setPTitulo(e.target.value)} />
                     <input type="file" accept="image/*" onChange={(e) => uploadImage(e, setPImg)} style={{marginBottom:'5px'}} />
                     <input type="text" placeholder="URL Img" value={pImg} readOnly style={{backgroundColor:'#e9ecef'}} />
@@ -193,7 +193,7 @@ function Home() {
                         <p>{proj.description}</p>
                         <div className="card-actions">
                             {!isLoggedIn && proj.demoUrl && <a href={proj.demoUrl} target="_blank" className="btn-demo">Demo</a>}
-                            {isLoggedIn && <><a href={proj.repoUrl} className="btn-outline">Repo</a> <button onClick={() => deleteItem('http://localhost:8080/api/projects', proj.id, setProjects, projects)} className="btn-danger">Eliminar</button></>}
+                            {isLoggedIn && <><a href={proj.repoUrl} className="btn-outline">Repo</a> <button onClick={() => deleteItem('https://portfolio-backend-h9y2.onrender.com/api/projects', proj.id, setProjects, projects)} className="btn-danger">Eliminar</button></>}
                         </div>
                     </div>
                 </div>

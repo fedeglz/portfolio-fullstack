@@ -19,7 +19,7 @@ function Login() {
     try {
       // 2. Enviamos la carta al Backend (endpoint de prueba)
       // Si Java responde OK, es que la contraseña es real.
-      const response = await fetch('http://localhost:8080/api/auth/login', {
+      const response = await fetch('https://portfolio-backend-h9y2.onrender.com/api/auth/login', {
         method: 'POST',
         headers: {
           'Authorization': authHeader
