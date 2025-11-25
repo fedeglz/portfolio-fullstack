@@ -127,29 +127,24 @@ function Home() {
             <div className="nav-links"><a href="#portfolio">Proyectos</a><a href="#education">Formación</a></div>
             <div className="admin-trigger-nav">{!isLoggedIn ? <button onClick={() => navigate('/login')} className="btn-login-nav">Login</button> : <button onClick={handleLogout} className="btn-login-nav">Salir</button>}</div>
         </nav>
-        <div className="social-actions">
+        <div className="hero-content">
+            {/* Foto de perfil */}
+            {persona?.fotoUrl && <img src={persona.fotoUrl} alt="Perfil" className="profile-pic" />}
+            
+            {/* Nombre y Título */}
+            <h1>{persona ? persona.nombre : "Cargando..."}</h1>
+            <h2>{persona ? persona.titulo : "..."}</h2>
+            
+            {/* 3. BOTONES SOCIALES (Dentro del contenido) */}
+            <div className="social-actions">
                 <div className="social-icons">
-                    {/* 1. LINKEDIN */}
-                    <a href="https://www.linkedin.com/in/fede-gonzalez" target="_blank" rel="noreferrer" className="icon-link">
-                        <FaLinkedinIn />
-                    </a>
-                    {/* 2. GITHUB */}
-                    <a href="https://github.com/fedeglz" target="_blank" rel="noreferrer" className="icon-link">
-                        <FaGithub />
-                    </a>
-                    {/* 3. WHATSAPP */}
-                    <a href="https://wa.me/+5493886410137" target="_blank" rel="noreferrer" className="icon-link">
-                        <FaWhatsapp />
-                    </a>
-                    {/* 4. EMAIL */}
-                    <a href="https://fedegonzalez.dev@gmail.com" className="icon-link">
-                        <FaEnvelope />
-                    </a>
-                </div>                
-                {/* 5. BOTÓN CV */}
-                <a href="/CV_FG.pdf" download="CV_Federico_Gonzalez.pdf" className="btn-cv">
-                    Descargar CV <FaFileDownload style={{marginLeft: '8px'}}/>
-                </a>            
+                    <a href="https://www.linkedin.com/in/fede-gonzalez" target="_blank" rel="noreferrer" className="icon-link"><FaLinkedinIn /></a>
+                    <a href="https://github.com/fedeglz" target="_blank" rel="noreferrer" className="icon-link"><FaGithub /></a>
+                    <a href="https://wa.me/5493886410137" target="_blank" rel="noreferrer" className="icon-link"><FaWhatsapp /></a>
+                    <a href="mailto:fedegonzalez.dev@gmail.com" className="icon-link"><FaEnvelope /></a>
+                </div>
+                <a href="/CV_FG.pdf" download="CV_Federico_Gonzalez.pdf" className="btn-cv">Descargar CV <FaFileDownload style={{marginLeft:'8px'}}/></a>
+                </div>                         
         </div>
       </header>
 
