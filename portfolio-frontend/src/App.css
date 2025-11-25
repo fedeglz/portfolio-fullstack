@@ -57,6 +57,103 @@ body {
 }
 .btn-primary:hover, .btn-outline:hover { transform: translateY(-3px); opacity: 0.9; }
 
+/* --- NAVBAR SUPERIOR --- */
+.navbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+}
+
+.nav-links a {
+  color: rgba(255,255,255,0.7);
+  text-decoration: none;
+  margin-right: 20px;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+.nav-links a:hover { color: white; }
+
+.btn-login-nav {
+  background: rgba(255,255,255,0.1);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 5px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+/* --- ESTILO DE PERFIL (FOTO REDONDA) --- */
+.profile-pic {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid rgba(255,255,255,0.2);
+  margin-bottom: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* --- ACCIONES SOCIALES (Iconos + CV) --- */
+.social-actions {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.social-icons {
+  display: flex;
+  gap: 15px;
+}
+
+.icon-link {
+  width: 45px;
+  height: 45px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 50%; /* Circulo perfecto */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+}
+
+.icon-link:hover {
+  background: white;
+  color: var(--primary);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+/* Botón de CV Destacado */
+.btn-cv {
+  background: linear-gradient(90deg, var(--secondary) 0%, #6366f1 100%);
+  color: white;
+  padding: 12px 30px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+  transition: transform 0.2s;
+}
+
+.btn-cv:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+}
+
 /* --- LOGIN MINI --- */
 .admin-trigger { position: absolute; top: 20px; right: 20px; }
 .login-mini input { padding: 8px; border-radius: 4px; border: none; font-size: 0.8rem; margin-right: 5px; background: rgba(255,255,255,0.1); color: white; }
@@ -69,13 +166,127 @@ body {
 
 /* --- EDUCACIÓN --- */
 .education-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; }
+/* --- TARJETA DE CERTIFICADOS --- */
 .edu-card {
-  background: var(--white); padding: 30px; border-radius: 16px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-top: 5px solid var(--secondary);
+  background: var(--white);
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  border-top: 5px solid var(--secondary);
+  overflow: hidden;
+  transition: transform 0.2s;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  /* AJUSTE CLAVE: Altura fija para que todas sean iguales */
+  height: 100%; 
+  min-height: 320px; 
+  position: relative;
 }
-.edu-card h4 { font-size: 1.1rem; margin-bottom: 5px; color: var(--primary); }
-.edu-card span { display: block; font-size: 0.85rem; color: var(--secondary); font-weight: 700; text-transform: uppercase; margin-bottom: 15px; }
-.edu-card p { font-size: 0.95rem; color: var(--text-light); }
+
+.edu-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+/* Imagen del certificado (Diploma) */
+.edu-card img {
+  width: 100%;
+  height: 160px; /* Altura fija para la foto */
+  object-fit: cover; /* Recorta la imagen para llenar el espacio sin deformar */
+  border-bottom: 1px solid #f1f5f9;
+}
+
+/* Contenido de texto */
+.edu-card h4 { 
+  margin: 15px 20px 5px; 
+  font-size: 1.1rem; 
+  color: var(--primary); 
+  line-height: 1.4;
+}
+
+.edu-card span { 
+  display: block; 
+  margin: 0 20px 10px; 
+  font-size: 0.85rem; 
+  color: var(--secondary); 
+  font-weight: 700; 
+  text-transform: uppercase; 
+}
+
+.edu-card p { 
+  margin: 0 20px 20px; 
+  font-size: 0.9rem; 
+  color: var(--text-light); 
+  flex-grow: 1; /* Empuja el botón hacia abajo si hay espacio */
+}
+
+/* Botón Eliminar (Más pequeño y centrado) */
+.edu-card button.btn-danger {
+  margin: 0 20px 20px; 
+  width: calc(100% - 40px); 
+  padding: 8px;
+  font-size: 0.9rem;
+  align-self: center;
+}
+
+/* --- MODAL (VISOR DE FOTOS) --- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.95); /* Fondo oscuro */
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(5px);
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  position: relative;
+  background: transparent;
+  padding: 0;
+  max-width: 90%;
+  max-height: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.modal-content img {
+  max-width: 100%;
+  max-height: 80vh;
+  border-radius: 8px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  border: 2px solid white;
+}
+
+.modal-content button {
+  margin-top: 20px;
+  padding: 10px 30px;
+  background: white;
+  color: var(--primary);
+  border: none;
+  border-radius: 50px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  transition: transform 0.2s;
+}
+
+.modal-content button:hover {
+  transform: scale(1.05);
+  background: var(--secondary);
+  color: white;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
 
 /* --- PORTAFOLIO --- */
 .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; }
