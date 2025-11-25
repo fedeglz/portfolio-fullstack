@@ -301,7 +301,21 @@ body {
 .card-body h4 { font-size: 1.3rem; margin-bottom: 10px; color: var(--primary); }
 .card-actions { display: flex; gap: 10px; margin-top: 20px; }
 .btn-demo { flex: 1; text-align: center; padding: 10px; background: #6366f1; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; }
-.btn-danger { padding: 10px 15px; background: var(--danger); color: white; border: none; border-radius: 8px; cursor: pointer; }
+.btn-danger {
+  padding: 10px 15px;
+  background: var(--danger);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease; 
+}
+.btn-danger:hover {
+  background-color: #dc2626; 
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4); 
+}
 
 /* --- ADMIN PANEL --- */
 .admin-panel { background: var(--white); padding: 30px; border-radius: 12px; box-shadow: 0 0 20px rgba(0,0,0,0.1); margin-bottom: 50px; border: 2px dashed var(--secondary); }
@@ -312,3 +326,51 @@ body {
 .footer { background: var(--primary); color: var(--white); text-align: center; padding: 80px 20px; margin-top: 80px; }
 .contact-info { margin: 30px 0; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
 .contact-info span { background: rgba(255,255,255,0.1); padding: 10px 25px; border-radius: 50px; }
+
+
+/* ========================================= */
+/* EFECTO DE MOVIMIENTO GLOBAL (HOVER)     */
+/* ========================================= */
+
+/* 1. Definimos la transición suave para TODOS los botones */
+.btn, .btn-primary, .btn-outline, .btn-danger, .btn-success, .btn-demo, .btn-cv, .btn-login-nav, .btn-logout, .btn-social {
+  transition: all 0.3s ease !important;
+  position: relative; /* Necesario para el movimiento */
+}
+
+/* 2. Definimos el movimiento hacia arriba y la sombra al pasar el mouse */
+.btn:hover, 
+.btn-primary:hover, 
+.btn-outline:hover, 
+.btn-danger:hover, 
+.btn-success:hover, 
+.btn-demo:hover, 
+.btn-cv:hover, 
+.btn-login-nav:hover, 
+.btn-logout:hover, 
+.btn-social:hover {
+  transform: translateY(-3px) !important; /* Se mueve 3px arriba */
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2) !important; /* Sombra elegante */
+}
+
+/* Un detalle extra: Al hacer clic, que baje un poquito (Efecto pulsación) */
+.btn:active, .btn-primary:active, .btn-outline:active, .btn-danger:active, .btn-success:active, .btn-demo:active, .btn-cv:active, .btn-login-nav:active, .btn-logout:active {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 5px 10px rgba(0,0,0,0.2) !important;
+}
+
+
+/* --- Botones --- */
+.card-actions {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.card-actions > * {
+  flex: 1 !important; /* El !important fuerza a que ocupen el mismo espacio */
+  width: auto !important; /* Anula anchos fijos viejos */
+  margin: 0 !important; /* Quita márgenes extraños */
+  text-align: center;
+  justify-content: center;
+}

@@ -1,48 +1,56 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-// Importamos los iconos (LinkedIn, GitHub, WhatsApp, Email, Descarga)
+// Mantenemos solo los iconos sociales del header, quitamos el lápiz
 import { FaLinkedinIn, FaGithub, FaWhatsapp, FaEnvelope, FaFileDownload } from 'react-icons/fa'
 import '../App.css'
 
 function Home() {
   const navigate = useNavigate()
-  
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [authHeader, setAuthHeader] = useState(null)
 
-  // Datos de la Base de Datos
+  // URL DEL BACKEND
+  const API_URL = window.location.hostname === 'localhost'
+    ? 'http://localhost:8080/api'
+    : 'https://portfolio-backend-h9y2.onrender.com/api';
+
+  // Datos
   const [persona, setPersona] = useState(null)
   const [projects, setProjects] = useState([])
   const [certificates, setCertificates] = useState([])
 
-  // Estados para Editar
+  // Estados de Edición
+  const [editingCertId, setEditingCertId] = useState(null)
+  const [editingProjId, setEditingProjId] = useState(null)
+
+  // Estados Persona
   const [editNombre, setEditNombre] = useState(""); const [editTitulo, setEditTitulo] = useState(""); 
   const [editSobreMi, setEditSobreMi] = useState(""); const [editFoto, setEditFoto] = useState("");
 
-  // Estados Formularios
+  // Estados Proyectos
   const [pTitulo, setPTitulo] = useState(""); const [pDesc, setPDesc] = useState(""); const [pImg, setPImg] = useState(""); const [pRepo, setPRepo] = useState(""); const [pDemo, setPDemo] = useState("");
+  
+  // Estados Certificados
   const [cTitulo, setCTitulo] = useState(""); const [cInst, setCInst] = useState(""); const [cImg, setCImg] = useState(""); const [cDesc, setCDesc] = useState("");
 
   const [modalImage, setModalImage] = useState(null)
 
+  const loadData = () => {
+    fetch(`${API_URL}/persona`).then(r=>r.json()).then(d => {
+        setPersona(d); if(d){setEditNombre(d.nombre); setEditTitulo(d.titulo); setEditSobreMi(d.sobreMi); setEditFoto(d.fotoUrl)}
+    }).catch(console.error)
+    fetch(`${API_URL}/projects`).then(r=>r.json()).then(setProjects).catch(console.error)
+    fetch(`${API_URL}/certificados`).then(r=>r.json()).then(setCertificates).catch(console.error)
+  }
+
   useEffect(() => {
     const token = sessionStorage.getItem('adminToken')
     if (token) { setIsLoggedIn(true); setAuthHeader(token); }
-
-    fetch('https://portfolio-backend-h9y2.onrender.com/api/persona').then(r => r.json()).then(data => {
-        setPersona(data)
-        if(data) { setEditNombre(data.nombre); setEditTitulo(data.titulo); setEditSobreMi(data.sobreMi); setEditFoto(data.fotoUrl); }
-    }).catch(console.error)
-
-    fetch('https://portfolio-backend-h9y2.onrender.com/api/projects').then(r => r.json()).then(setProjects).catch(console.error)
-    fetch('https://portfolio-backend-h9y2.onrender.com/api/certificados').then(r => r.json()).then(setCertificates).catch(console.error)
+    loadData()
   }, [])
 
-  const handleLogout = () => {
-    sessionStorage.removeItem('adminToken'); setIsLoggedIn(false); setAuthHeader(null); window.location.reload();
-  }
+  const handleLogout = () => { sessionStorage.removeItem('adminToken'); setIsLoggedIn(false); setAuthHeader(null); window.location.reload(); }
 
-  // Función auxiliar para subir imagen a Cloudinary
   const uploadImage = async (e, setUrlState) => {
     const file = e.target.files[0]; if (!file) return;
     const data = new FormData(); data.append("file", file); data.append("upload_preset", "portfolio_preset");
@@ -50,26 +58,64 @@ function Home() {
       alert("Subiendo imagen...");
       const res = await fetch("https://api.cloudinary.com/v1_1/dvyvijqmy/image/upload", { method: "POST", body: data });
       const fileData = await res.json(); setUrlState(fileData.secure_url); alert("Imagen cargada ✅");
-    } catch (error) { console.error(error); alert("Error al subir imagen ❌"); }
+    } catch { alert("Error al subir imagen ❌"); }
   };
 
+  // Guardar Perfil
   const handleSaveProfile = (e) => {
     e.preventDefault()
-    fetch('https://portfolio-backend-h9y2.onrender.com/api/persona', {
+    fetch(`${API_URL}/persona`, {
         method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': authHeader },
         body: JSON.stringify({ nombre: editNombre, titulo: editTitulo, sobreMi: editSobreMi, fotoUrl: editFoto })
-    }).then(r => r.json()).then(data => { setPersona(data); alert("Perfil actualizado"); })
+    }).then(r=>r.json()).then(d => { setPersona(d); alert("Perfil actualizado"); })
   }
 
-  const createItem = (url, data, setList, list, resetFields) => {
-    fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': authHeader }, body: JSON.stringify(data) })
-    .then(r => r.ok ? r.json() : Promise.reject()).then(newItem => { setList([...list, newItem]); alert("Creado!"); resetFields(); })
+  // Guardar Certificado
+  const handleSaveCert = (e) => {
+    e.preventDefault()
+    const method = editingCertId ? 'PUT' : 'POST'
+    const url = editingCertId ? `${API_URL}/certificados/${editingCertId}` : `${API_URL}/certificados`
+    
+    fetch(url, {
+        method: method, headers: { 'Content-Type': 'application/json', 'Authorization': authHeader },
+        body: JSON.stringify({ titulo: cTitulo, institucion: cInst, imagenUrl: cImg, descripcion: cDesc })
+    }).then(r => r.ok ? r.json() : Promise.reject()).then(() => {
+        loadData(); alert(editingCertId ? "Certificado editado!" : "Certificado creado!");
+        setCTitulo(""); setCInst(""); setCImg(""); setCDesc(""); setEditingCertId(null);
+    }).catch(() => alert("Error al guardar"))
   }
 
-  const deleteItem = (url, id, setList, list) => {
+  const loadCertForEdit = (cert) => {
+    setEditingCertId(cert.id)
+    setCTitulo(cert.titulo); setCInst(cert.institucion); setCImg(cert.imagenUrl); setCDesc(cert.descripcion);
+    window.scrollTo(0, 600);
+  }
+
+  // Guardar Proyecto
+  const handleSaveProject = (e) => {
+    e.preventDefault()
+    const method = editingProjId ? 'PUT' : 'POST'
+    const url = editingProjId ? `${API_URL}/projects/${editingProjId}` : `${API_URL}/projects`
+
+    fetch(url, {
+        method: method, headers: { 'Content-Type': 'application/json', 'Authorization': authHeader },
+        body: JSON.stringify({ name: pTitulo, description: pDesc, imageUrl: pImg, repoUrl: pRepo, demoUrl: pDemo })
+    }).then(r => r.ok ? r.json() : Promise.reject()).then(() => {
+        loadData(); alert(editingProjId ? "Proyecto editado!" : "Proyecto creado!");
+        setPTitulo(""); setPDesc(""); setPImg(""); setPRepo(""); setPDemo(""); setEditingProjId(null);
+    }).catch(() => alert("Error al guardar"))
+  }
+
+  const loadProjForEdit = (proj) => {
+    setEditingProjId(proj.id)
+    setPTitulo(proj.name); setPDesc(proj.description); setPImg(proj.imageUrl); setPRepo(proj.repoUrl); setPDemo(proj.demoUrl);
+    window.scrollTo(0, 1200);
+  }
+
+  const deleteItem = (url, id) => {
     if(!window.confirm("¿Borrar?")) return;
     fetch(`${url}/${id}`, { method: 'DELETE', headers: { 'Authorization': authHeader } })
-    .then(r => r.ok && setList(list.filter(i => i.id !== id)))
+    .then(r => r.ok && loadData())
   }
 
   return (
@@ -77,58 +123,33 @@ function Home() {
       {modalImage && <div className="modal-overlay" onClick={() => setModalImage(null)}><div className="modal-content"><img src={modalImage} alt="Zoom" /><button onClick={() => setModalImage(null)}>Cerrar</button></div></div>}
 
       <header className="hero">
-        {/* BARRA DE NAVEGACIÓN SUPERIOR (SUTIL) */}
         <nav className="navbar">
-            <div className="nav-links">
-                <a href="#portfolio">Proyectos</a>
-                <a href="#education">Formación</a>
-            </div>
-            <div className="admin-trigger-nav">
-                {!isLoggedIn ? (
-                    <button onClick={() => navigate('/login')} className="btn-login-nav">Login</button>
-                ) : (
-                    <button onClick={handleLogout} className="btn-login-nav">Salir</button>
-                )}
-            </div>
+            <div className="nav-links"><a href="#portfolio">Proyectos</a><a href="#education">Formación</a></div>
+            <div className="admin-trigger-nav">{!isLoggedIn ? <button onClick={() => navigate('/login')} className="btn-login-nav">Login</button> : <button onClick={handleLogout} className="btn-login-nav">Salir</button>}</div>
         </nav>
-
         <div className="hero-content">
             {persona?.fotoUrl && <img src={persona.fotoUrl} alt="Perfil" className="profile-pic" />}
-            
-            <h1>{persona ? persona.nombre : "Cargando nombre..."}</h1>
-            <h2>{persona ? persona.titulo : "Cargando título..."}</h2>
-            
-            {/* NUEVA SECCIÓN DE CONTACTO Y CV */}
+            <h1>{persona ? persona.nombre : "Cargando..."}</h1>
+            <h2>{persona ? persona.titulo : "..."}</h2>
             <div className="social-actions">
                 <div className="social-icons">
-                    {/* Reemplaza los href con tus links reales */}
-                    <a href="https://www.linkedin.com/in/fede-gonzalez" target="_blank" rel="noreferrer" className="icon-link"><FaLinkedinIn /></a>
-                    <a href="https://github.com/fedeglz" target="_blank" rel="noreferrer" className="icon-link"><FaGithub /></a>
-                    <a href="https://wa.me/+5493886410137" target="_blank" rel="noreferrer" className="icon-link"><FaWhatsapp /></a>
-                    <a href="https://fedegonzalez.dev@gmail.com" className="icon-link"><FaEnvelope /></a>
+                    <a href="#" className="icon-link"><FaLinkedinIn /></a><a href="#" className="icon-link"><FaGithub /></a><a href="#" className="icon-link"><FaWhatsapp /></a><a href="#" className="icon-link"><FaEnvelope /></a>
                 </div>
-                
-                {/* Botón de descarga de CV */}
-                <a href="/CV_FG.pdf" download="CV_Federico_Gonzalez.pdf" className="btn-cv">
-                    Descargar CV <FaFileDownload style={{marginLeft: '8px'}}/>
-                </a>
+                <a href="/CV_FG.pdf" download="CV.pdf" className="btn-cv">Descargar CV <FaFileDownload style={{marginLeft:'8px'}}/></a>
             </div>
         </div>
       </header>
 
-      {/* PANEL ADMIN */}
       {isLoggedIn && (
         <section className="section admin-panel">
-            <h3>✏️ Editar Mi Perfil</h3>
+            <h3>✏️ Editar Perfil</h3>
             <form onSubmit={handleSaveProfile} className="admin-form">
                 <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px'}}>
                     <input type="text" placeholder="Nombre" value={editNombre} onChange={e => setEditNombre(e.target.value)} />
                     <input type="text" placeholder="Título" value={editTitulo} onChange={e => setEditTitulo(e.target.value)} />
                 </div>
-                {/* Input Foto Perfil Cloudinary */}
                 <input type="file" accept="image/*" onChange={(e) => uploadImage(e, setEditFoto)} style={{marginBottom:'5px'}} />
                 <input type="text" placeholder="URL Foto" value={editFoto} readOnly style={{backgroundColor:'#e9ecef'}} />
-                
                 <textarea placeholder="Sobre Mí" value={editSobreMi} onChange={e => setEditSobreMi(e.target.value)} rows="4" />
                 <button type="submit" className="btn-success">Actualizar Perfil</button>
             </form>
@@ -144,14 +165,17 @@ function Home() {
         <h3>Formación Profesional</h3>
         {isLoggedIn && (
             <div className="admin-panel">
-                <h4>+ Agregar Certificado</h4>
-                <form onSubmit={(e) => { e.preventDefault(); createItem('https://portfolio-backend-h9y2.onrender.com/api/certificados', {titulo: cTitulo, institucion: cInst, imagenUrl: cImg, descripcion: cDesc}, setCertificates, certificates, () => { setCTitulo(""); setCInst(""); setCImg(""); setCDesc(""); }) }} className="admin-form">
+                <h4>{editingCertId ? "✏️ Editando Certificado" : "+ Agregar Certificado"}</h4>
+                <form onSubmit={handleSaveCert} className="admin-form">
                     <input type="text" placeholder="Título" value={cTitulo} onChange={e => setCTitulo(e.target.value)} />
                     <input type="text" placeholder="Institución" value={cInst} onChange={e => setCInst(e.target.value)} />
                     <input type="file" accept="image/*" onChange={(e) => uploadImage(e, setCImg)} style={{marginBottom:'5px'}} />
                     <input type="text" placeholder="URL Img" value={cImg} readOnly style={{backgroundColor:'#e9ecef'}} />
                     <input type="text" placeholder="Descripción" value={cDesc} onChange={e => setCDesc(e.target.value)} />
-                    <button type="submit" className="btn-success">Guardar</button>
+                    <div style={{display:'flex', gap:'10px'}}>
+                        <button type="submit" className="btn-success">{editingCertId ? "Actualizar" : "Guardar"}</button>
+                        {editingCertId && <button type="button" onClick={()=>{setEditingCertId(null); setCTitulo(""); setCInst(""); setCImg(""); setCDesc("")}} className="btn-outline" style={{color:'#333'}}>Cancelar</button>}
+                    </div>
                 </form>
             </div>
         )}
@@ -162,7 +186,23 @@ function Home() {
                     <h4>{cert.titulo}</h4>
                     <span>{cert.institucion}</span>
                     <p>{cert.descripcion}</p>
-                    {isLoggedIn && <button onClick={(e)=>{e.stopPropagation(); deleteItem('https://portfolio-backend-h9y2.onrender.com/api/certificados', cert.id, setCertificates, certificates)}} className="btn-danger">Eliminar</button>}
+                    {/* BOTONES DE ADMIN (CERTIFICADOS) */}
+                    {isLoggedIn && (
+                        <div className="card-actions" style={{padding: '0 20px 20px'}}>
+                            <button 
+                                onClick={(e) => { e.stopPropagation(); loadCertForEdit(cert); }} 
+                                className="btn-outline" 
+                                style={{color:'#3b82f6', borderColor:'#3b82f6'}}>
+                                Editar
+                            </button>
+                            
+                            <button 
+                                onClick={(e) => { e.stopPropagation(); deleteItem(`${API_URL}/certificados`, cert.id); }} 
+                                className="btn-danger">
+                                Eliminar
+                            </button>
+                        </div>
+                    )}
                 </div>
             ))}
         </div>
@@ -172,15 +212,18 @@ function Home() {
         <h3>Mis Proyectos</h3>
         {isLoggedIn && (
             <div className="admin-panel">
-                <h4>+ Agregar Proyecto</h4>
-                <form onSubmit={(e) => { e.preventDefault(); createItem('https://portfolio-backend-h9y2.onrender.com/api/projects', {name: pTitulo, description: pDesc, imageUrl: pImg, repoUrl: pRepo, demoUrl: pDemo}, setProjects, projects, () => { setPTitulo(""); setPDesc(""); setPImg(""); setPRepo(""); setPDemo(""); }) }} className="admin-form">
+                <h4>{editingProjId ? "✏️ Editando Proyecto" : "+ Agregar Proyecto"}</h4>
+                <form onSubmit={handleSaveProject} className="admin-form">
                     <input type="text" placeholder="Título" value={pTitulo} onChange={e => setPTitulo(e.target.value)} />
                     <input type="file" accept="image/*" onChange={(e) => uploadImage(e, setPImg)} style={{marginBottom:'5px'}} />
                     <input type="text" placeholder="URL Img" value={pImg} readOnly style={{backgroundColor:'#e9ecef'}} />
                     <input type="text" placeholder="Repo URL" value={pRepo} onChange={e => setPRepo(e.target.value)} />
                     <input type="text" placeholder="Demo URL" value={pDemo} onChange={e => setPDemo(e.target.value)} />
                     <textarea placeholder="Descripción" value={pDesc} onChange={e => setPDesc(e.target.value)} />
-                    <button type="submit" className="btn-success">Guardar</button>
+                    <div style={{display:'flex', gap:'10px'}}>
+                        <button type="submit" className="btn-success">{editingProjId ? "Actualizar" : "Guardar"}</button>
+                        {editingProjId && <button type="button" onClick={()=>{setEditingProjId(null); setPTitulo(""); setPDesc(""); setPImg(""); setPRepo(""); setPDemo("")}} className="btn-outline" style={{color:'#333'}}>Cancelar</button>}
+                    </div>
                 </form>
             </div>
         )}
@@ -193,7 +236,12 @@ function Home() {
                         <p>{proj.description}</p>
                         <div className="card-actions">
                             {!isLoggedIn && proj.demoUrl && <a href={proj.demoUrl} target="_blank" className="btn-demo">Demo</a>}
-                            {isLoggedIn && <><a href={proj.repoUrl} className="btn-outline">Repo</a> <button onClick={() => deleteItem('https://portfolio-backend-h9y2.onrender.com/api/projects', proj.id, setProjects, projects)} className="btn-danger">Eliminar</button></>}
+                            
+                            {/* BOTONES DE PROYECTO CON TEXTO */}
+                            {isLoggedIn && <>
+                                <button onClick={() => loadProjForEdit(proj)} className="btn-outline" style={{color:'#3b82f6', borderColor:'#3b82f6', flex:1, fontSize:'0.9rem'}}>Editar</button>
+                                <button onClick={() => deleteItem(`${API_URL}/projects`, proj.id)} className="btn-danger" style={{flex:1, fontSize:'0.9rem'}}>Eliminar</button>
+                            </>}
                         </div>
                     </div>
                 </div>

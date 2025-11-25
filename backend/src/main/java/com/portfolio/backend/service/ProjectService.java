@@ -23,7 +23,19 @@ public class ProjectService {
 
     public void deleteProject(Long id) {projectRepository.deleteById(id);}
 
+    public Project editProject(Long id, Project projectDetails) {
+        Project project = projectRepository.findById(id).orElse(null);
 
+        if (project != null) {
+            project.setName(projectDetails.getName());
+            project.setDescription(projectDetails.getDescription());
+            project.setImageUrl(projectDetails.getImageUrl());
+            project.setRepoUrl(projectDetails.getRepoUrl());
+            project.setDemoUrl(projectDetails.getDemoUrl());
+            return projectRepository.save(project);
+        }
+        return null;
+    }
 
 
 }

@@ -3,23 +3,27 @@ import { useNavigate } from 'react-router-dom'
 import '../App.css'
 
 function Login() {
+  // DETECCIÓN INTELIGENTE DE ENTORNO
+  // Si la web está en localhost, usa tu Java local. Si no, usa Render.
+  const API_URL = window.location.hostname === 'localhost'
+    ? 'http://localhost:8080/api'
+    : 'https://portfolio-backend-h9y2.onrender.com/api';
+
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [error, setError] = useState("") // Para mostrar si falló la clave
+  const [error, setError] = useState("")
   const navigate = useNavigate()
 
   const handleLogin = async (e) => {
     e.preventDefault()
-    setError("") // Limpiamos errores previos
+    setError("")
 
-    // 1. Preparamos la "carta" con las credenciales para Java
     const credentials = btoa(`${email}:${password}`)
     const authHeader = `Basic ${credentials}`
 
     try {
-      // 2. Enviamos la carta al Backend (endpoint de prueba)
-      // Si Java responde OK, es que la contraseña es real.
-      const response = await fetch('https://portfolio-backend-h9y2.onrender.com/api/auth/login', {
+      // AQUI USAMOS LA VARIABLE DINÁMICA
+      const response = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Authorization': authHeader
@@ -27,13 +31,10 @@ function Login() {
       })
 
       if (response.ok) {
-        // 3. ¡ÉXITO! Java nos dejó pasar.
-        // Guardamos el permiso en el navegador y entramos.
         sessionStorage.setItem('adminToken', authHeader)
         alert("¡Acceso concedido! Bienvenido.")
         navigate('/') 
       } else {
-        // 4. FALLO: Java dijo "Unauthorized" (401)
         setError("Usuario o contraseña incorrectos.")
       }
     } catch (err) {
@@ -63,7 +64,6 @@ function Login() {
             required 
           />
           
-          {/* Mensaje de error en rojo */}
           {error && <p style={{color: '#ef4444', fontSize: '0.9rem', fontWeight: 'bold'}}>{error}</p>}
           
           <button type="submit" className="btn-success">Ingresar</button>

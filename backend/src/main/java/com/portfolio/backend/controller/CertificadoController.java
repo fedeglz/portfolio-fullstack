@@ -29,4 +29,18 @@ public class CertificadoController {
         certificadoRepository.deleteById(id);
     }
 
+    @PutMapping("/{id}")
+    public Certificado editar(@PathVariable Long id, @RequestBody Certificado certDetails) {
+        Certificado cert = certificadoRepository.findById(id).orElse(null);
+
+        if (cert != null) {
+            cert.setTitulo(certDetails.getTitulo());
+            cert.setInstitucion(certDetails.getInstitucion());
+            cert.setDescripcion(certDetails.getDescripcion());
+            cert.setImagenUrl(certDetails.getImagenUrl());
+            return certificadoRepository.save(cert);
+        }
+        return null;
+    }
+
 }
