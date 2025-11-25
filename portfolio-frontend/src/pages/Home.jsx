@@ -141,7 +141,14 @@ function Home() {
                     <a href="https://www.linkedin.com/in/fede-gonzalez" target="_blank" rel="noreferrer" className="icon-link"><FaLinkedinIn /></a>
                     <a href="https://github.com/fedeglz" target="_blank" rel="noreferrer" className="icon-link"><FaGithub /></a>
                     <a href="https://wa.me/5493886410137" target="_blank" rel="noreferrer" className="icon-link"><FaWhatsapp /></a>
-                    <a href="mailto:fedegonzalez.dev@gmail.com" className="icon-link"><FaEnvelope /></a>
+                    <a 
+                        href="https://mail.google.com/mail/?view=cm&fs=1&to=fedegonzalez.dev@gmail.com" 
+                        target="_blank" 
+                        rel="noreferrer" 
+                        className="icon-link"
+                    >
+                        <FaEnvelope />
+                    </a>
                 </div>
                 <a href="/CV_FG.pdf" download="CV_Federico_Gonzalez.pdf" className="btn-cv">Descargar CV <FaFileDownload style={{marginLeft:'8px'}}/></a>
                 </div>                         
