@@ -157,7 +157,7 @@ function Home() {
 
       {isLoggedIn && (
         <section className="section admin-panel">
-            <h3>✏️ Editar Perfil</h3>
+            <h3> Editar Perfil</h3>
             <form onSubmit={handleSaveProfile} className="admin-form">
                 <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px'}}>
                     <input type="text" placeholder="Nombre" value={editNombre} onChange={e => setEditNombre(e.target.value)} />
