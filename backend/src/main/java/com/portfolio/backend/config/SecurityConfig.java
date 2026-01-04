@@ -59,7 +59,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "https://portfolio-fullstack-wine.vercel.app")); // Frontend
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "https://portfolio-fullstack-wine.vercel.app", "http://w4k4gwkw444cocwcsc444ocs.157.173.111.226.sslip.io")); // Frontend
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);
